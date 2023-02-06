@@ -9,6 +9,7 @@ import morgan from "morgan";
 import path from "path";
 import { fileURLToPath } from "url";
 import authRoutes from "./routes/auth.js";
+import userRoutes from "./routes/users.js";
 import { register } from "./controllers/auth.js";
 
 // CONFIGURATION
@@ -34,7 +35,7 @@ const storage = multer.diskStorage({
     cb(null, file.originalname);
   },
 });
-  
+
 const upload = multer({ storage });
 
 // ROUTES WITH FILES
@@ -42,13 +43,17 @@ app.post("/auth/register", upload.single("picture"), register);
 
 // ROUTES
 app.use("/auth", authRoutes);
+app.use("/users", userRoutes);
 
 // MONGOOSE SETUP
 const PORT = process.env.PORT || 6001;
 mongoose.set("strictQuery", false);
-mongoose.connect(process.env.MONGO_URL, {
+mongoose
+  .connect(process.env.MONGO_URL, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
-}).then(() => {
+  })
+  .then(() => {
     app.listen(PORT, () => console.log(`Server Port: ${PORT}`));
-}).catch((error) => console.log(`${error} did not connect`));
+  })
+  .catch((error) => console.log(`${error} did not connect`));
